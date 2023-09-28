@@ -17,9 +17,6 @@ import Profile from '../Screen';
 const BottomTab = createBottomTabNavigator();
 
 const TabRoutes = props => {
-  console.warn(NavigationString.HOME_SCREEN);
-console.warn(NavigationString.CREATE_TRIP);
-console.warn(NavigationString.PROFILE);
 
   return (
     <BottomTab.Navigator
@@ -38,7 +35,7 @@ console.warn(NavigationString.PROFILE);
       }}>
       <BottomTab.Screen
         name={NavigationString.HOME_SCREEN}
-        component={HomeScreen}
+        component={Screens.HomeScreen}
         options={{
           tabBarIcon: ({focused}) => {
             return (
@@ -56,7 +53,7 @@ console.warn(NavigationString.PROFILE);
      
       <BottomTab.Screen
         name={NavigationString.CREATE_TRIP}
-        component={CreateTrip}
+        component={Screens.CreateTrip}
         options={{
           tabBarIcon: ({focused}) => {
             return (
@@ -72,7 +69,7 @@ console.warn(NavigationString.PROFILE);
      
       <BottomTab.Screen
         name={NavigationString.PROFILE}
-        component={Profile}
+        component={Screens.Profile}
         options={{
           tabBarIcon: ({focused}) => {
             return (

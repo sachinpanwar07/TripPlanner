@@ -4,7 +4,7 @@ import React from 'react'
 const CreateTrip = () => {
   return (
     <View>
-      <Text>CreateTrip</Text>
+      <Text style={{color:"red"}}>CreateTrip</Text>
     </View>
   )
 }
