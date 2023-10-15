@@ -50,7 +50,21 @@ const TabRoutes = props => {
           },
         }}
       />
-     
+       <BottomTab.Screen
+        name={NavigationString.TRIP_SCREEN}
+        component={Screens.Trip}
+        options={{
+          tabBarIcon: ({focused}) => {
+            return (
+              <Image
+                source={imagePath.ic_trip}
+                style={[styles.icon, {tintColor: focused ? 'red' : 'grey',width:60}]}
+              />
+            );
+          },
+          tabBarStyle: {},
+        }}
+      />
       <BottomTab.Screen
         name={NavigationString.CREATE_TRIP}
         component={Screens.CreateTrip}

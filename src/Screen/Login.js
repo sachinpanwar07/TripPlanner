@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, ImageBackground} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState,useContext} from 'react';
 import NavigationString from '../Navigation/NavigationString';
 import ImagePath from '../constants/ImagePath';
 import {TextInput} from 'react-native-gesture-handler';
@@ -7,16 +7,25 @@ import TextInputCompo from '../components/CustomComponets/TextInputCompo';
 import Strings from '../constants/Strings';
 import ButtonComponent from '../components/CustomComponets/ButtonCompo';
 import { moderateScale, moderateScaleVertical, textScale } from '../Style/responsive';
-import { useDispatch } from 'react-redux';
-import { loginAsync } from '../redux/reducer/auth';
+import auth from '@react-native-firebase/auth';
+import Routes from '../Navigation/Routes';
+import UserContext from '../UserProvider';
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecuretext] = useState(true);
-  const dispatch = useDispatch();
-
-  const handleLogin = () => {
-    dispatch(loginAsync(email, password));
+  
+  
+  const { setUserData } = useContext(UserContext);
+  const handleLogin = async () => {
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+      setUserData(true)
+       
+     
+    } catch (error) {
+      console.error(error);
+    }
   };
   return (
     <View style={styles.container}>

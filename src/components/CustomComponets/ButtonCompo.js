@@ -2,7 +2,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Colors from '../../Style/Colors'
 import { moderateScale,textScale } from '../../Style/responsive'
-import { useSelector } from 'react-redux'
 
 
 const ButtonComponent = ({onPress=()=>{},

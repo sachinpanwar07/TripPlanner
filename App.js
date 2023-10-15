@@ -2,12 +2,25 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import Login from './src/components/Auth/Login';
 import Routes from './src/Navigation/Routes';
-import { Provider } from 'react-redux';
-import store from './src/redux/store';
+import { initializeApp } from '@react-native-firebase/app';
+const firebaseConfig = {
+    apiKey: "AIzaSyCB6Vt_RunC6rOQpYjBgwNdSta0nc9v0i4",
+    authDomain: "firetrip-b161b.firebaseapp.com",
+    projectId: "firetrip-b161b",
+    storageBucket: "firetrip-b161b.appspot.com",
+    messagingSenderId: "446433615304",
+    appId: "1:446433615304:web:badc91a4f20325d926b4fd"
+  };
+  import { UserProvider } from './src/UserProvider';
+  const app = initializeApp(firebaseConfig);
 const App = () => {
-  return <Provider store={store}>
-    <Routes/>
-  </Provider>
+  return(
+    <UserProvider>
+      <Routes />
+    </UserProvider>
+  )
+   
+
 };
 
 export default App;

@@ -5,6 +5,6 @@ export default{
     PROFILE:"profile",
     CREATE_TRIP:"CreateTrip",
     SIGNUP_SCREEN:"Signup",
-    TAB_ROUTES:"TabRoutes"
-
+    TAB_ROUTES:"TabRoutes",
+    TRIP_SCREEN:"Trip"
 } 
