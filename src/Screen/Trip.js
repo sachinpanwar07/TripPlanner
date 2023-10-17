@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect,useCallback} from 'react';
 import {StyleSheet, View, FlatList, Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {moderateScale, textScale} from '../Style/responsive';
@@ -7,20 +7,21 @@ import Colors from '../Style/Colors';
 const Trip = () => {
   const [tripData, setTripData] = useState([]);
 
-  useEffect(() => {
-    const fetchTripData = async () => {
-      try {
-        const data = await AsyncStorage.getItem('trips');
-        console.log('Data from AsyncStorage:', data);
-        if (data) {
-          setTripData(JSON.parse(data));
-        }
-      } catch (error) {
-        console.error(error);
+  const fetchTripData = useCallback(async () => {
+    try {
+      const data = await AsyncStorage.getItem('trips');
+      console.log('Data from AsyncStorage:', data);
+      if (data) {
+        setTripData(JSON.parse(data));
       }
-    };
-    fetchTripData();
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchTripData();
+  }, [fetchTripData]);
   console.log('this trip data' + tripData);
   const Item = ({name, destination, description, date, enddate, time}) => {
     // formate date in mm/dd/yy

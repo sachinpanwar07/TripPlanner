@@ -7,8 +7,8 @@ import { Login } from '../Screen';
 import UserContext from '../UserProvider';
 const Stack = createNativeStackNavigator();
 export default function Routes() {
-  // const { userData } = useContext(UserContext);
-  const userData=true
+   const { userData } = useContext(UserContext);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
