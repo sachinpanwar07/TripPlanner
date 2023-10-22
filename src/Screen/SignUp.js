@@ -14,17 +14,21 @@ const SignUp = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [secureText, setSecuretext] = useState(true);
   const [confirmPass,setConfirmPass]=useState('')
-  const { setUserData } = useContext(UserContext);
+  const { userData,setUserData } = useContext(UserContext);
   const handleSignup = async () => {
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
-      // User has been created successfully
-      setUserData(true);
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      // Set user data in context
+      setUserData(user);
+
+      // You can also navigate to the profile screen here
     } catch (error) {
       console.error(error);
-      // Handle signup failure
     }
   };
+
   return (
     <View style={styles.container}>
       <ImageBackground

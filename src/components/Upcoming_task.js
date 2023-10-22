@@ -65,8 +65,7 @@ const CreateTrip = ({navigation}) => {
         description,
         date,
         enddate,
-        time,
-        isDone:false
+        time
         
       };
       const existingTrips = await AsyncStorage.getItem('trips');
@@ -74,7 +73,7 @@ const CreateTrip = ({navigation}) => {
       trips.push(newTrip);
       await AsyncStorage.setItem('trips', JSON.stringify(trips));
       console.log('Data stored successfully:', JSON.stringify(trips));
-      // navigation.navigate(NavigationString.TRIP_SCREEN);
+      navigation.navigate(NavigationString.TRIP_SCREEN);
     } catch (error) {
       console.error(error);
     }
@@ -105,24 +104,18 @@ const CreateTrip = ({navigation}) => {
           style={styles.textinput}
           onChangeText={handleNameChange}
           value={name}
-          multiline={true}
-          numberOfLines={1}
         />
         <TextInput
           placeholder="Destination"
           style={styles.textinput}
           onChangeText={handleDestinationChange}
           value={destination}
-          multiline={true}
-          numberOfLines={2}
         />
         <TextInput
           placeholder="Description"
           style={styles.textinput}
           onChangeText={handleDescriptionChange}
           value={description}
-          multiline={true}
-          numberOfLines={4}
         />
         <View style={styles.datebtnstyle}>
           {/* <Button onPress={() => setShow(true)} title="Start date" /> */}
@@ -139,7 +132,7 @@ const CreateTrip = ({navigation}) => {
               onChange={onChangeStartDate}
             />
           )}
-          <Text style={{fontWeight:'bold'}}>{formatDate(date)}</Text>
+          <Text>{formatDate(date)}</Text>
           <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
             <Image source={ImagePath.ic_date} style={styles.dateimg} />
           </TouchableOpacity>
@@ -153,7 +146,7 @@ const CreateTrip = ({navigation}) => {
               onChange={onChangeEndDate}
             />
           )}
-             <Text style={{fontWeight:'bold'}}>{formatDate(enddate)}</Text>
+             <Text>{formatDate(enddate)}</Text>
         </View>
       </View>
       <View
@@ -182,10 +175,9 @@ const styles = StyleSheet.create({
   textinput: {
     width: moderateScale(300),
     color: 'black',
+
     marginHorizontal: moderateScale(12),
     padding: 12,
-    fontWeight:'bold'
-    
   },
   ImagetextView: {
     marginTop: moderateScale(20),
@@ -200,8 +192,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dateimg: {
-    width: moderateScale(40),
-    height: moderateScale(40),
+    width: moderateScale(60),
+    height: moderateScale(60),
   },
   addbtn: {
     backgroundColor: Colors.blueColor,

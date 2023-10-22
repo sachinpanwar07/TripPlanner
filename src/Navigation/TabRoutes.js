@@ -41,7 +41,7 @@ const TabRoutes = props => {
             return (
               <Image
                 source={imagePath.homeIcon}
-                style={[styles.icon, {tintColor: focused ? 'red' : 'grey'}]}
+                style={[styles.icon, {tintColor: focused ? 'blue' : 'grey'}]}
               />
             );
           },
@@ -50,21 +50,7 @@ const TabRoutes = props => {
           },
         }}
       />
-       <BottomTab.Screen
-        name={NavigationString.TRIP_SCREEN}
-        component={Screens.Trip}
-        options={{
-          tabBarIcon: ({focused}) => {
-            return (
-              <Image
-                source={imagePath.ic_trip}
-                style={[styles.icon, {tintColor: focused ? 'red' : 'grey',width:60}]}
-              />
-            );
-          },
-          tabBarStyle: {},
-        }}
-      />
+   
       <BottomTab.Screen
         name={NavigationString.CREATE_TRIP}
         component={Screens.CreateTrip}
@@ -73,7 +59,7 @@ const TabRoutes = props => {
             return (
               <Image
                 source={imagePath.createIcon}
-                style={[styles.icon, {tintColor: focused ? 'red' : 'grey'}]}
+                style={[styles.icon, {tintColor: focused ? 'blue' : 'grey'}]}
               />
             );
           },
@@ -89,7 +75,7 @@ const TabRoutes = props => {
             return (
               <Image
                 source={imagePath.profileIcon}
-                style={[styles.icon, {tintColor: focused ? 'red' : 'grey'}]}
+                style={[styles.icon, {tintColor: focused ? 'blue' : 'grey'}]}
               />
             );
           },

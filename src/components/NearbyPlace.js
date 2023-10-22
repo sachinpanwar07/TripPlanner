@@ -4,10 +4,8 @@ import axios from 'axios';
 import { create } from 'react-test-renderer';
 import { moderateScale } from '../Style/responsive';
 import Colors from '../Style/Colors';
-
 const NearbyPlace = ({ location }) => {
   const [places, setPlaces] = useState([]);
-
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
@@ -39,7 +37,8 @@ const NearbyPlace = ({ location }) => {
       data={places}
       renderItem={renderItem}
       keyExtractor={item => item.id.toString()}
-      numColumns={2} 
+     horizontal={true}
+     showsHorizontalScrollIndicator={false}
     /> 
     </View>
    
@@ -48,7 +47,7 @@ const NearbyPlace = ({ location }) => {
  const styles=StyleSheet.create({
 
     flatListStyle:{
-      flexDirection:'column',
+     
       marginBottom:moderateScale(70)
     },
     renderList:{

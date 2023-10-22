@@ -3,6 +3,7 @@ import React from 'react';
 import NavigationString from './NavigationString';
 import * as Screens from '../Screen';
 import TabRoutes from './TabRoutes';
+import Trip from '../Screen';
 export default function (Stack) {
  
   return (
@@ -13,7 +14,7 @@ export default function (Stack) {
         options={{ headerShown: false }}
       
       />
-    
+      
     </>
   );
 }

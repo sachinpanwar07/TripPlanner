@@ -14,19 +14,23 @@ const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecuretext] = useState(true);
-  
-  
-  const { setUserData } = useContext(UserContext);
+  const { useData,setUserData } = useContext(UserContext);
   const handleLogin = async () => {
     try {
-      await auth().signInWithEmailAndPassword(email, password);
-      setUserData(true)
-       
-     
+      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+  
+      // Set user data in context
+      setUserData(user);
+      console.log("User Data:", user);
+  
+      // You can also navigate to the profile screen here
     } catch (error) {
       console.error(error);
     }
   };
+  
+
   return (
     <View style={styles.container}>
       <ImageBackground

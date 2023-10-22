@@ -7,25 +7,16 @@ import { Login } from '../Screen';
 import UserContext from '../UserProvider';
 const Stack = createNativeStackNavigator();
 export default function Routes() {
-   const { userData } = useContext(UserContext);
-
+  //  const {userData} = useContext(UserContext);
+  const userData=true;
+  
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {userData? MainStack(Stack) : AuthStack(Stack)}
-       {/* {MainStack(Stack)} */}
-        {/* {AuthStack(Stack)} */}
+      {userData ? MainStack(Stack) : AuthStack(Stack)}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-// export default function Routes({ userData }) {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator>
-//         {userData ? MainStack(Stack) : AuthStack(Stack)}
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// }
+

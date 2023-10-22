@@ -48,4 +48,8 @@ export default {
   maroonColor: '#800000',
   navyColor: '#000080',
   oliveColor: '#808000',
+
+  customColor1: '#FF5733',
+  customColor2: '#33FF57',
+ 
 };
