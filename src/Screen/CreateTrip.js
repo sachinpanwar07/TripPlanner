@@ -6,6 +6,7 @@ import {
   Button,
   TouchableOpacity,
   Image,
+  Alert
 } from 'react-native';
 import React, {useState,useEffect} from 'react';
 import TextInputCompo from '../components/CustomComponets/TextInputCompo';
@@ -24,21 +25,23 @@ const CreateTrip = ({navigation}) => {
   const [name, setName] = useState('');
   const [destination, setDestination] = useState('');
   const [description, setDescription] = useState('');
+  
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       setDate(selectedDate);
     }
+    
   };
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date());
-    }, 1000); // Update every second
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTime(new Date());
+  //   }, 1000); // Update every second
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   const onChangeEndDate = (event, selectedDate) => {
     setShowEndDatePicker(Platform.OS === 'ios');
@@ -75,6 +78,7 @@ const CreateTrip = ({navigation}) => {
       await AsyncStorage.setItem('trips', JSON.stringify(trips));
       console.log('Data stored successfully:', JSON.stringify(trips));
       // navigation.navigate(NavigationString.TRIP_SCREEN);
+Alert.alert("Trip is Added")
     } catch (error) {
       console.error(error);
     }
@@ -133,7 +137,7 @@ const CreateTrip = ({navigation}) => {
             <DateTimePicker
               testID="dateTimePicker"
               value={date}
-              mode="datetime"
+              mode="date"
               is24Hour={true}
               display="default"
               onChange={onChangeStartDate}
@@ -147,7 +151,7 @@ const CreateTrip = ({navigation}) => {
             <DateTimePicker
               testID="dateTimePicker"
               value={enddate}
-              mode="datetime"
+              mode="date"
               is24Hour={true}
               display="default"
               onChange={onChangeEndDate}

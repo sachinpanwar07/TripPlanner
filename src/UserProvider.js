@@ -13,9 +13,11 @@ export const UserProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
-
+  const signOut = () => {
+    return auth().signOut();
+  };
   return (
-    <UserContext.Provider value={{ userData, setUserData }}>
+    <UserContext.Provider value={{ userData, setUserData ,signOut}}>
       {children}
     </UserContext.Provider>
   );

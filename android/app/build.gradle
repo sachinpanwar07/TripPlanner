@@ -67,6 +67,10 @@ def enableProguardInReleaseBuilds = false
  * this variant is about 6MiB larger per architecture than default.
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
+ext {
+    // Define hermesEnabled here
+    hermesEnabled = true // or false, depending on your preference
+}
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -105,10 +109,10 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-       signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -116,8 +120,8 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-implementation platform('com.google.firebase:firebase-bom:32.3.1')
-implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation platform('com.google.firebase:firebase-bom:32.3.1')
+    implementation("com.google.firebase:firebase-analytics-ktx")
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'

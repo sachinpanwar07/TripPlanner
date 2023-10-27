@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState ,useEffect} from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput,Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { useAuth } from '../UserProvider';
 import ImagePath from '../constants/ImagePath';
 import Colors from '../Style/Colors';
 import { moderateScale } from '../Style/responsive';
-import { launchImageLibrary } from 'react-native-image-picker';
-
+import storage from '@react-native-firebase/storage';
+import { utils } from '@react-native-firebase/app';
+import {ImagePicker,launchImageLibrary} from 'react-native-image-picker';
 const Profile = () => {
-  const { userData } = useAuth();
+  const { userData ,signOut} = useAuth();
   const [profileImage, setProfileImage] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newName, setNewName] = useState(userData.displayName || '');
 
-  const chooseImage = () => {
+  const chooseImage = async() => {
     const options = {
       mediaType: 'photo',
       quality: 1,
@@ -21,23 +22,39 @@ const Profile = () => {
       maxHeight: 300,
     };
 
-    launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        setProfileImage({ uri: response.uri });
-      }
-    });
+    const result = await launchImageLibrary(options);
+    setProfileImage(result.assets[0].uri);
   };
 
   const handleEditProfile = () => {
     setIsModalVisible(true);
   };
 
-  const handleSaveProfile = () => {
-    // Update the user's display name in Firebase Authentication
+  const handleLogOut = () => {
+    signOut() // Calling sign out function from UserProvider
+      .then(() => {
+        // Handle successful sign out
+        Alert.alert('Logged out successfully');
+      })
+      .catch(error => {
+        console.error('Error logging out:', error);
+        Alert.alert('Error logging out. Please try again.');
+      });
+  };
+  
+  const handleImageUpload = async () => {
+    if (profileImage) {
+      const fileName = `profile_images/${userData.uid}.jpg`;
+      const reference = storage().ref(fileName);
+  
+      try {
+        await reference.putFile(profileImage);
+        console.log('Image uploaded successfully');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+  
     userData
       .updateProfile({
         displayName: newName,
@@ -48,23 +65,39 @@ const Profile = () => {
       .catch(error => {
         console.error('Error updating user name:', error);
       });
-
-    setIsModalVisible(false); // Close the modal after saving
+  
+    setIsModalVisible(false);
   };
-
+  
+  useEffect(() => {
+    const getProfileImage = async () => {
+      try {
+        const reference = storage().ref(`profile_images/${userData.uid}.jpg`);
+        const uri = await reference.getDownloadURL();
+        setProfileImage(uri);
+      } catch (error) {
+        console.error('Error retrieving profile image:', error);
+      }
+    };
+  
+    getProfileImage();
+  }, []);
+console.log(profileImage)
   return (
     <View style={styles.MainContainer}>
       <View style={styles.ImageContainer}>
-        <Image
-          source={profileImage ? profileImage : ImagePath.ic_profile}
-          style={styles.imageStyle}
-        />
+        {profileImage && <Image source={{ uri:profileImage }} style={styles.imageStyle} />}
       </View>
       <Text>{newName}</Text>
       <Text>{userData.email}</Text>
-      <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
-        <Text style={styles.editButtonText}>Edit Profile</Text>
-      </TouchableOpacity>
+      <View style={styles.EditLogBtns}>
+        <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
+          <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleLogOut} style={styles.logoutbtn}>
+          <Text style={styles.editButtonText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
 
       <Modal
         isVisible={isModalVisible}
@@ -75,26 +108,27 @@ const Profile = () => {
           <Text>Edit Profile</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="New Name"
+            placeholder="Edit Name"
             value={newName}
             onChangeText={text => setNewName(text)}
           />
           <TouchableOpacity onPress={chooseImage} style={styles.changePhotoButton}>
-            <Text style={styles.changePhotoButtonText}>Change Profile Photo</Text>
+            <Text style={styles.changePhotoButtonText}>upload Profile Photo</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSaveProfile} style={styles.saveButton}>
+          <TouchableOpacity onPress={handleImageUpload} style={styles.saveButton}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.cancelButton}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
+       
         </View>
       </Modal>
+
+    
     </View>
   );
 };
 
 export default Profile;
+
 
 const styles = StyleSheet.create({
   MainContainer: {
@@ -179,4 +213,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  EditLogBtns:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+   
+    width:moderateScale(200)
+  },
+  logoutbtn:{
+    marginTop: moderateScale(10),
+    padding: moderateScale(10),
+    backgroundColor: Colors.redColor,
+    borderRadius: moderateScale(5),
+  }
 });
