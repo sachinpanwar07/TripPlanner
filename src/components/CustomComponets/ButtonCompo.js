@@ -33,8 +33,8 @@ container:{
     alignItems:"center",
    borderRadius:moderateScale(10),
    flexDirection:'row',
-   paddingHorizontal:moderateScale(12)
-  
+   paddingHorizontal:moderateScale(12),
+   margin:moderateScale(10),
 },
 textStyle:{
     fontSize:textScale(16),

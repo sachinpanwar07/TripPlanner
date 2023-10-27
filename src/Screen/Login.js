@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, ImageBackground} from 'react-native';
+import {StyleSheet, Text, View, ImageBackground,Alert} from 'react-native';
 import React, {useState,useContext} from 'react';
 import NavigationString from '../Navigation/NavigationString';
 import ImagePath from '../constants/ImagePath';
@@ -16,6 +16,9 @@ const Login = ({navigation}) => {
   const [secureText, setSecuretext] = useState(true);
   const { useData,setUserData } = useContext(UserContext);
   const handleLogin = async () => {
+    // if(!email || !password){
+    //   Alert.alert("Enter Email and PassWord")
+    // }
     try {
       const userCredential = await auth().signInWithEmailAndPassword(email, password);
       const user = userCredential.user;

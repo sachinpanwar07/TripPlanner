@@ -3,6 +3,7 @@ import React from 'react'
 import NavigationString from '../Navigation/NavigationString'
 import ImagePath from '../constants/ImagePath'
 import ButtonComponent from '../components/CustomComponets/ButtonCompo'
+import Strings from '../constants/Strings'
 import { moderateScale, moderateScaleVertical, textScale } from '../Style/responsive'
 const InitialScreen = ({navigation}) => {
   return (
@@ -18,7 +19,7 @@ const InitialScreen = ({navigation}) => {
         onPress={()=>navigation.navigate(NavigationString.LOGIN)}/>
        <Text style={{textAlign:'center',fontWeight:'bold',fontSize:textScale(17)}}>OR</Text>
        <ButtonComponent 
-        text='Sing up'
+        text={Strings.SIGN_UP} 
        onPress={()=>navigation.navigate(NavigationString.SIGNUP_SCREEN)}/>
       </View>
       </ImageBackground>

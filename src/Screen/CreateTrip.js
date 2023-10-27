@@ -6,9 +6,9 @@ import {
   Button,
   TouchableOpacity,
   Image,
-  Alert
+  Alert,
 } from 'react-native';
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import TextInputCompo from '../components/CustomComponets/TextInputCompo';
 import {moderateScale, textScale} from '../Style/responsive';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -19,34 +19,38 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const CreateTrip = ({navigation}) => {
   const [date, setDate] = useState(new Date());
   const [enddate, setEndDate] = useState(new Date());
-  const [time,setTime]=useState(new Date());
+  const [time, setTime] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [name, setName] = useState('');
   const [destination, setDestination] = useState('');
   const [description, setDescription] = useState('');
+  const [minEndDate, setMinEndDate] = useState(new Date()); // Initialize with current date
+// check for rendering datepicker text conditionaly 
+ const [chek1,setCheck1]=useState(false);
+ const[check2,setCheck2]=useState(false)
+ // set mindate of start date picker show that user can't select past date
+ const today = new Date();
+  const mindate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
   
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       setDate(selectedDate);
+      setMinEndDate(selectedDate);
+      setCheck1(true)
     }
-    
   };
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTime(new Date());
-  //   }, 1000); // Update every second
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
-
+ 
   const onChangeEndDate = (event, selectedDate) => {
     setShowEndDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       setEndDate(selectedDate);
+      setCheck2(true)
     }
   };
   const handleNameChange = text => {
@@ -61,6 +65,16 @@ const CreateTrip = ({navigation}) => {
     setDescription(text);
   };
   const handleAddTrip = async () => {
+    if (
+      !name.trim() ||
+      !destination.trim() ||
+      !description.trim() ||
+      !date ||
+      !enddate
+    ) {
+      Alert.alert('All fields are required');
+      return;
+    }
     try {
       const newTrip = {
         name,
@@ -69,8 +83,7 @@ const CreateTrip = ({navigation}) => {
         date,
         enddate,
         time,
-        isDone:false
-        
+        isDone: false,
       };
       const existingTrips = await AsyncStorage.getItem('trips');
       const trips = existingTrips ? JSON.parse(existingTrips) : [];
@@ -78,10 +91,16 @@ const CreateTrip = ({navigation}) => {
       await AsyncStorage.setItem('trips', JSON.stringify(trips));
       console.log('Data stored successfully:', JSON.stringify(trips));
       // navigation.navigate(NavigationString.TRIP_SCREEN);
-Alert.alert("Trip is Added")
+      Alert.alert('Trip Added');
     } catch (error) {
       console.error(error);
     }
+    // reset all input fields and start date and enddate also after add one trip
+    setName('');
+    setDestination('');
+    setDescription('');
+    setCheck1(false)
+    setCheck2(false)
   };
   const formatDate = value => {
     if (typeof value === 'string') {
@@ -94,7 +113,7 @@ Alert.alert("Trip is Added")
     }
     return '';
   };
-  
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.ImagetextView}>
@@ -139,11 +158,16 @@ Alert.alert("Trip is Added")
               value={date}
               mode="date"
               is24Hour={true}
+              minimumDate={mindate}
               display="default"
               onChange={onChangeStartDate}
             />
           )}
-          <Text style={{fontWeight:'bold'}}>{formatDate(date)}</Text>
+          {chek1 ? (
+            <Text style={{fontWeight: 'bold'}}>{formatDate(date)}</Text>
+          ) : (
+            <Text>start date</Text>
+          )}
           <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
             <Image source={ImagePath.ic_date} style={styles.dateimg} />
           </TouchableOpacity>
@@ -153,11 +177,17 @@ Alert.alert("Trip is Added")
               value={enddate}
               mode="date"
               is24Hour={true}
+              minimumDate={minEndDate}
               display="default"
               onChange={onChangeEndDate}
+              
             />
           )}
-             <Text style={{fontWeight:'bold'}}>{formatDate(enddate)}</Text>
+          {check2 ? (
+            <Text style={{fontWeight: 'bold'}}>{formatDate(enddate)}</Text>
+          ) : (
+            <Text>enddate </Text>
+          )}
         </View>
       </View>
       <View
@@ -188,8 +218,7 @@ const styles = StyleSheet.create({
     color: 'black',
     marginHorizontal: moderateScale(12),
     padding: 12,
-    fontWeight:'bold'
-    
+    fontWeight: 'bold',
   },
   ImagetextView: {
     marginTop: moderateScale(20),
