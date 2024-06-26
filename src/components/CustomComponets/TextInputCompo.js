@@ -17,9 +17,10 @@ const TextInputCompo = ({
   onPressSecure = () => {},
   inputStyle = {},
   textStyle = {},
-  placeholderTextColor = Colors.whiteColorOpacity70,
+  placeholderTextColor = Colors.blackColor,
   ...props
 }) => {
+ 
   return (
     <View
       style={{
@@ -54,12 +55,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: moderateScale(16),
     alignItems: 'center',
-    backgroundColor: Colors.gray2,
+    backgroundColor: Colors.whiteColor,
     marginBottom: moderateScale(16),
   },
   textStyle: {
     fontSize: textScale(14),
     flex: 1,
-    color: Colors.whiteColor,
+    color: Colors.blackColor,
   },
 });

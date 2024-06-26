@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect,useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import auth from '@react-native-firebase/auth';
 
 const UserContext = createContext();
@@ -13,15 +13,18 @@ export const UserProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
+
   const signOut = () => {
     return auth().signOut();
   };
+
   return (
-    <UserContext.Provider value={{ userData, setUserData ,signOut}}>
+    <UserContext.Provider value={{ userData, setUserData, signOut }}>
       {children}
     </UserContext.Provider>
   );
 };
+
 export const useAuth = () => {
   const context = useContext(UserContext);
   if (!context) {
@@ -29,4 +32,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
 export default UserContext;

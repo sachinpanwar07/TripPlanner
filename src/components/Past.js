@@ -1,101 +1,69 @@
-import React, {useState, useEffect} from 'react';
-import {View, FlatList, Text, TouchableOpacity, Image,StyleSheet} from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, FlatList, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {moderateScale, textScale} from '../Style/responsive';
+import { moderateScale, textScale } from '../Style/responsive';
 import Colors from '../Style/Colors';
 import ImagePath from '../constants/ImagePath';
-import { create } from 'react-test-renderer';
+import { useAuth } from '../UserProvider';
 
-const PastTrips = () => {
-  const [pastTrips, setPastTrips] = useState([]);
+const PastTrip = ({ navigation }) => {
+  const { userData } = useAuth();
+  const [tripData, setTripData] = useState([]);
+
+  // Function to fetch past trips from AsyncStorage
+  const fetchTripData = useCallback(async () => {
+    if (userData) {
+      try {
+        const storedTrips = await AsyncStorage.getItem(`pastTrips-${userData.uid}`);
+        if (storedTrips) {
+          const parsedTrips = JSON.parse(storedTrips);
+          setTripData(parsedTrips);
+        } else {
+          setTripData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching past trips:', error);
+      }
+    }
+  }, [userData]);
 
   useEffect(() => {
-    const fetchPastTrips = async () => {
-      try {
-        const data = await AsyncStorage.getItem('pastTrips');
-        if (data) {
-          const parsedData = JSON.parse(data);
-          setPastTrips(parsedData);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    fetchTripData();
+  }, [fetchTripData]);
 
-    fetchPastTrips();
-  }, []);
-
-  const Item = ({name, destination, description, date, enddate, time,index}) => {
-    const formatDate = value => {
-      if (typeof value === 'string') {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          return date.toLocaleDateString();
-        }
-      } else if (value instanceof Date) {
-        return value.toLocaleDateString();
-      }
-      return '';
-    };
-
-    const formatTime = value => {
-      if (typeof value === 'string') {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          return date.toLocaleTimeString();
-        }
-      } else if (value instanceof Date) {
-        return value.toLocaleTimeString();
-      }
-      return '';
-    };
-    const handleDelete = async (index) => {
-      try {
-        const updatedTrips = [...pastTrips.slice(0, index), ...pastTrips.slice(index + 1)];
-        await AsyncStorage.setItem('pastTrips', JSON.stringify(updatedTrips));
-        setPastTrips(updatedTrips);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    return (
-      <View style={styles.TripView}>
-        <Text style={styles.textstyle}>Name: {name}</Text>
-        <Text style={styles.textstyle}>Destination: {destination}</Text>
-        <Text style={styles.textstyle}>{description}</Text>
-        <View style={styles.dateView}>
-          <Text style={styles.textstyle1}>{formatDate(date)}</Text>
-          <Text style={styles.textstyle1}>{formatDate(enddate)}</Text>
-          <Text style={styles.textstyle1}>{formatTime(time)}</Text>
-        </View>
-        <View style={styles.deleteDoneView}>
-          <TouchableOpacity onPress={() => handleDelete(index)}>
-            <Image source={ImagePath.ic_dlt} style={styles.ingIcon} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+  const handleDelete = async (tripId) => {
+    try {
+      const updatedTrips = tripData.filter(trip => trip.id !== tripId);
+      setTripData(updatedTrips);
+      await AsyncStorage.setItem(`pastTrips-${userData.uid}`, JSON.stringify(updatedTrips));
+    } catch (error) {
+      console.error('Error deleting past trip:', error);
+    }
   };
 
-  const renderItem = ({item,index}) => (
-    <Item
-      name={item.name}
-      destination={item.destination}
-      description={item.description}
-      date={item.date}
-      enddate={item.enddate}
-      time={item.time}
-      index={index}
-    />
+  const renderItem = ({ item }) => (
+    <View style={styles.TripView}>
+      <Text style={styles.textsyle}>Name: {item.name}</Text>
+      <Text style={styles.textsyle}>Destination: {item.destination}</Text>
+      <Text style={styles.textsyle}>{item.description}</Text>
+      <View style={styles.dateView}>
+        <Text style={styles.textsyle1}>{item.date}</Text>
+        <Text style={styles.textsyle1}>{item.enddate}</Text>
+      </View>
+      <View style={styles.deleteView}>
+        <TouchableOpacity onPress={() => handleDelete(item.id)}>
+          <Image source={ImagePath.ic_dlt} style={styles.ingIcon} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   return (
     <View style={styles.MainContainer}>
       <FlatList
-        data={pastTrips}
+        data={tripData}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -111,33 +79,28 @@ const styles = StyleSheet.create({
     margin: moderateScale(12),
     backgroundColor: Colors.whiteColor,
     borderRadius: moderateScale(12),
-    
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: { width: 0, height: 10 },
+    shadowColor: Colors.blueColor,
     elevation: 5,
     padding: moderateScale(20),
-    backgroundColor:Colors.whiteColorOpacity70,
-    shadowColor:Colors.blueColor
+    backgroundColor: Colors.whiteColorOpacity70,
   },
   dateView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: moderateScale(6),
   },
-  textstyle: {
+  textsyle: {
     fontSize: textScale(17),
     color: Colors.blackOpacity90,
   },
-  textstyle1: {
+  textsyle1: {
     fontSize: textScale(13),
-    color: Colors.blackColor,
+    color: Colors.blackOpacity90,
   },
-  mytrip: {
-    fontSize: textScale(24),
-    color: Colors.blueColor,
-    padding: moderateScale(12),
-  },
-  deleteDoneView: {
+  deleteView: {
     justifyContent: 'center',
-    alignItems:"center",
+    alignItems: 'center',
     marginTop: moderateScale(19),
   },
   ingIcon: {
@@ -146,4 +109,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PastTrips;
+export default PastTrip;

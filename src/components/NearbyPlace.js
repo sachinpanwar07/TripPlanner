@@ -4,7 +4,10 @@ import axios from 'axios';
 import { create } from 'react-test-renderer';
 import { moderateScale } from '../Style/responsive';
 import Colors from '../Style/Colors';
+
+
 const NearbyPlace = ({ location }) => {
+
   const [places, setPlaces] = useState([]);
   useEffect(() => {
     const fetchPlaces = async () => {

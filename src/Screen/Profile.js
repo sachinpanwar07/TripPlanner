@@ -1,20 +1,25 @@
-import React, { useState ,useEffect} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput,Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import Modal from 'react-native-modal';
-import { useAuth } from '../UserProvider';
-import ImagePath from '../constants/ImagePath';
+import { useAuth } from '../UserProvider'; // Adjust the path as necessary
 import Colors from '../Style/Colors';
 import { moderateScale } from '../Style/responsive';
 import storage from '@react-native-firebase/storage';
-import { utils } from '@react-native-firebase/app';
-import {ImagePicker,launchImageLibrary} from 'react-native-image-picker';
-const Profile = () => {
-  const { userData ,signOut} = useAuth();
-  const [profileImage, setProfileImage] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newName, setNewName] = useState(userData.displayName || '');
+import { launchImageLibrary } from 'react-native-image-picker';
 
-  const chooseImage = async() => {
+const Profile = () => {
+  const { userData, signOut } = useAuth();
+  const [profileImage, setProfileImage] = useState(userData?.photoURL || null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newName, setNewName] = useState(userData?.displayName || '');
+
+  useEffect(() => {
+    if (!profileImage && userData?.photoURL) {
+      setProfileImage(userData.photoURL);
+    }
+  }, [userData]);
+
+  const chooseImage = async () => {
     const options = {
       mediaType: 'photo',
       quality: 1,
@@ -23,7 +28,9 @@ const Profile = () => {
     };
 
     const result = await launchImageLibrary(options);
-    setProfileImage(result.assets[0].uri);
+    if (!result.didCancel) {
+      setProfileImage(result.assets[0].uri);
+    }
   };
 
   const handleEditProfile = () => {
@@ -31,9 +38,8 @@ const Profile = () => {
   };
 
   const handleLogOut = () => {
-    signOut() // Calling sign out function from UserProvider
+    signOut()
       .then(() => {
-        // Handle successful sign out
         Alert.alert('Logged out successfully');
       })
       .catch(error => {
@@ -41,55 +47,51 @@ const Profile = () => {
         Alert.alert('Error logging out. Please try again.');
       });
   };
-  
+
   const handleImageUpload = async () => {
     if (profileImage) {
       const fileName = `profile_images/${userData.uid}.jpg`;
       const reference = storage().ref(fileName);
-  
+
       try {
         await reference.putFile(profileImage);
-        console.log('Image uploaded successfully');
+        const uri = await reference.getDownloadURL();
+        setProfileImage(uri);
       } catch (error) {
         console.error('Error uploading image:', error);
       }
     }
-  
+
     userData
       .updateProfile({
         displayName: newName,
+        photoURL: profileImage,
       })
       .then(() => {
-        console.log('User name updated successfully');
+        console.log('User name and photo updated successfully');
       })
       .catch(error => {
-        console.error('Error updating user name:', error);
+        console.error('Error updating user name and photo:', error);
       });
-  
+
     setIsModalVisible(false);
   };
-  
-  useEffect(() => {
-    const getProfileImage = async () => {
-      try {
-        const reference = storage().ref(`profile_images/${userData.uid}.jpg`);
-        const uri = await reference.getDownloadURL();
-        setProfileImage(uri);
-      } catch (error) {
-        console.error('Error retrieving profile image:', error);
-      }
-    };
-  
-    getProfileImage();
-  }, []);
-console.log(profileImage)
+
+  const firstLetter = userData?.email?.charAt(0).toUpperCase();
+
   return (
     <View style={styles.MainContainer}>
       <View style={styles.ImageContainer}>
-        {profileImage && <Image source={{ uri:profileImage }} style={styles.imageStyle} />}
+        {profileImage ? (
+          <Image source={{ uri: profileImage }} style={styles.imageStyle} />
+        ) : (
+          <View style={styles.placeholderContainer}>
+            <Text style={styles.placeholderText}>{firstLetter}</Text>
+          </View>
+        )}
       </View>
-      <Text>{newName}</Text>
-      <Text>{userData.email}</Text>
+      <Text style={{ color: 'black' }}>{newName}</Text>
+      <Text style={{ color: 'black' }}>{userData?.email}</Text>
       <View style={styles.EditLogBtns}>
         <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit Profile</Text>
@@ -105,7 +107,7 @@ console.log(profileImage)
         style={styles.modal}
       >
         <View style={styles.modalContainer}>
-          <Text>Edit Profile</Text>
+          <Text style={{ color: 'black' }}>Edit Profile</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Edit Name"
@@ -113,22 +115,18 @@ console.log(profileImage)
             onChangeText={text => setNewName(text)}
           />
           <TouchableOpacity onPress={chooseImage} style={styles.changePhotoButton}>
-            <Text style={styles.changePhotoButtonText}>upload Profile Photo</Text>
+            <Text style={styles.changePhotoButtonText}>Upload Profile Photo</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleImageUpload} style={styles.saveButton}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
-       
         </View>
       </Modal>
-
-    
     </View>
   );
 };
 
 export default Profile;
-
 
 const styles = StyleSheet.create({
   MainContainer: {
@@ -150,6 +148,19 @@ const styles = StyleSheet.create({
     width: moderateScale(190),
     height: moderateScale(190),
     borderRadius: moderateScale(100),
+  },
+  placeholderContainer: {
+    width: moderateScale(190),
+    height: moderateScale(190),
+    borderRadius: moderateScale(100),
+    backgroundColor: Colors.blueColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: 'white',
+    fontSize: moderateScale(60),
+    fontWeight: 'bold',
   },
   editButton: {
     marginTop: moderateScale(10),
@@ -180,6 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(5),
     marginBottom: moderateScale(10),
     paddingHorizontal: moderateScale(10),
+    color: 'black',
   },
   changePhotoButton: {
     backgroundColor: Colors.blueColor,
@@ -213,16 +225,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  EditLogBtns:{
-    flexDirection:'row',
-    justifyContent:'space-between',
-   
-    width:moderateScale(200)
+  EditLogBtns: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: moderateScale(200),
   },
-  logoutbtn:{
+  logoutbtn: {
     marginTop: moderateScale(10),
     padding: moderateScale(10),
     backgroundColor: Colors.redColor,
     borderRadius: moderateScale(5),
-  }
+  },
 });
