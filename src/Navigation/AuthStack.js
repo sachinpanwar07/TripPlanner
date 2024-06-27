@@ -22,6 +22,7 @@ export default function (Stack) {
         component={Screens.Signup}
         options={{headerShown: false}}
       />
+     
     </>
   );
 }

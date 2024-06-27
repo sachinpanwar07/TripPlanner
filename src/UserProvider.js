@@ -18,8 +18,12 @@ export const UserProvider = ({ children }) => {
     return auth().signOut();
   };
 
+  const resetPassword = (email) => {
+    return auth().sendPasswordResetEmail(email);
+  };
+
   return (
-    <UserContext.Provider value={{ userData, setUserData, signOut }}>
+    <UserContext.Provider value={{ userData, setUserData, signOut, resetPassword }}>
       {children}
     </UserContext.Provider>
   );

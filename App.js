@@ -5,6 +5,7 @@ import Routes from './src/Navigation/Routes';
 import { initializeApp } from '@react-native-firebase/app';
 import useColorScheme from './src/Style/useColorScheme';
 import { darkStyles, lightStyles } from './src/Style/Styles';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const firebaseConfig = {
     apiKey: "AIzaSyCB6Vt_RunC6rOQpYjBgwNdSta0nc9v0i4",
     authDomain: "firetrip-b161b.firebaseapp.com",
@@ -20,9 +21,11 @@ const App = () => {
   const colorScheme = useColorScheme();
   const styles = colorScheme === 'dark' ? darkStyles : lightStyles;
   return(
+    <GestureHandlerRootView>
     <UserProvider>
       <Routes />
     </UserProvider>
+  </GestureHandlerRootView>
   )
    
 
